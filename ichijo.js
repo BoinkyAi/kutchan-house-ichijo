@@ -27,7 +27,11 @@
               highGap band, ending >= highTopGap under the ceiling at the column's low edge and
               within highMaxRun of the slope's low edge (Ichijo's 7-module rule): automatic
               (ichijo.highWin set, unless ichijo.transom[id] = false) or the op's own `stack`
-              (PRIMITIVES.md; validated: a row that does not fit ends it)
+              (PRIMITIVES.md; validated: a row that does not fit ends it).
+              Upper floors have no floor-level sliders (no balcony, STANDARDS.md §2 c): a window drawn to
+              the floor there is a 1,900 unit on the 2,144 head line. op.style 'fix' / 'open' = the
+              same-size FIX / opening unit where Ichijo makes one (SASH units[3]: J5961 <-> JF5961,
+              JF2061 <-> JK2061, JF2461 <-> JK2461); none = the class's own unit
      doors    every interior door at the catalogue door height
      fittings kitchen (I / peninsula / island), unit bath or unit shower, vanity, toilet:
               placed in the room's clear rectangle, with a fit verdict (bathrooms: the unit
@@ -284,10 +288,12 @@ function flatWing(M, L2, I, bb, view, B2, t, h0, k, FL2, gnd, pts) {
 /* ------------------------------------------------------------- v23 windows: Ichijo's own sashes */
 /* Ichijo sells its own triple-glazed resin sashes only (/workspace/house3d/ref/STANDARDS.md §1b), so every drawn
    outside window becomes whole standard rectangles. Height class from the drawn sill: floor sliders (掃き出し)
-   0 -> 2,174, every other unit ends on Ichijo's 2,144 head line; the widths each class comes in: [W, code, kind] */
+   0 -> 2,174, every other unit ends on Ichijo's 2,144 head line; the widths each class comes in: [W, code, kind,
+   the same-size unit of the other sort: [code, kind] (op.style 'fix' / 'open' picks it, see sashStyle)] */
 export const SASH = [
   { k: 'floor', sill: 0, h: 2.174, below: 0.12, units: [[2.487, 'J8671', 'sliding'], [1.653, 'J5971', 'sliding'], [1.545, 'J5571', 'sliding']] },
-  { k: '1900', sill: 0.244, h: 1.9, below: 0.6, units: [[2.487, 'J8661', 'sliding'], [1.653, 'J5961', 'sliding'], [0.743, 'JF2461', 'fix'], [0.6, 'JF2061', 'fix'], [0.405, 'JF1561', 'fix'], [0.228, 'JF1061', 'fix']] },
+  { k: '1900', sill: 0.244, h: 1.9, below: 0.6, units: [[2.487, 'J8661', 'sliding'], [1.653, 'J5961', 'sliding', ['JF5961', 'fix']], [0.743, 'JF2461', 'fix', ['JK2461', 'awning']],
+    [0.6, 'JF2061', 'fix', ['JK2061', 'awning']], [0.405, 'JF1561', 'fix'], [0.228, 'JF1061', 'fix']] },
   { k: '1175', sill: 0.969, h: 1.175, below: 1.35, units: [[2.487, 'J8642', 'sliding'], [1.653, 'J5942', 'sliding']] },
   { k: '603', sill: 1.541, h: 0.603, below: 1.62, units: [[0.6, 'JF2020', 'fix']] },
   { k: '467', sill: 1.677, h: 0.467, below: Infinity, units: [[2.487, 'J8615T', 'sliding'], [1.653, 'JF5915', 'fix'], [1.198, 'JF4415', 'fix']] },
@@ -301,15 +307,23 @@ const HALF = MASU / 2;                                           /* sashes sit o
 /* centre-to-centre of repeated columns: the half modules the unit + >= 120 mm of wall take (1,653 -> 1,820 = 2 modules,
    167 of wall between; 2,487 -> 2,730 = 3 modules) */
 export const sashPitch = (W) => Math.ceil((W + 0.12) / HALF - 1e-9) * HALF;
-const sashClass = (sill) => SASH.find(c => sill < c.below);
+/* the classes a floor takes: an upper floor (no balcony, STANDARDS.md §2 c) has no floor-level sliders */
+const sashClasses = (li) => (li > 0 ? SASH.filter(c => c.k !== 'floor') : SASH);
+const sashClass = (sill, cls) => cls.find(c => sill < c.below);
 /* a drawn window that already is one Ichijo unit at its standard height (the generators draw them so) */
-function sashExact(o) {
-  for (const c of SASH) {
+function sashExact(o, cls) {
+  for (const c of cls) {
     if (Math.abs(o.sill - c.sill) > 0.006 || Math.abs(o.head - c.sill - c.h) > 0.006) continue;
     const u = c.units.find(x => Math.abs(o.w - x[0]) < 0.003);
     if (u) return { c, u };
   }
   return null;
+}
+/* op.style 'fix' -> the FIX of an opening unit, 'open' -> the opening unit of a FIX, where Ichijo makes the same size
+   (u[3]); otherwise u itself */
+function sashStyle(u, style) {
+  const a = u[3], fix = style === 'fix';
+  return a && (fix || style === 'open') && (u[2] === 'fix') !== fix && (a[1] === 'fix') === fix ? [u[0], a[0], a[1]] : u;
 }
 /* columns of one width in the span s0..s1 along the wall: the widest unit, a narrower one only for 15 % more glass
    (units under 1.5 m, the slits, only where no wider one fits), as many as fit at sashPitch, centred in the span; on a side wall of the sloped zone (grid) the columns sit in bays of the
@@ -375,15 +389,16 @@ function sashWindow(o, X) {
       grid = { run: (s) => r0 + ua * s, s: (r) => (r - r0) / ua, limit: zone.to + X.t / 2 - opt(I, 'cornerWall', MASU) };
     }
   }
-  const ex = sashExact(o);
+  const cls = sashClasses(li), ex = sashExact(o, cls);
   let C = ex ? { W: ex.u[0], code: ex.u[1], kind: ex.u[2], at: [o.at], c: ex.c } : null;
   if (!ex) {
-    const c0 = sashClass(o.sill);
-    for (const c of [c0, ...SASH.filter(x => x !== c0).sort((a, b) => Math.abs(a.sill - o.sill) - Math.abs(b.sill - o.sill))]) {
+    const c0 = sashClass(o.sill, cls);
+    for (const c of [c0, ...cls.filter(x => x !== c0).sort((a, b) => Math.abs(a.sill - o.sill) - Math.abs(b.sill - o.sill))]) {
       C = (inZone && sashColumns(o.at, o.at + o.w, c, 1.653, grid)) || sashColumns(o.at, o.at + o.w, c, null, grid);
       if (C) break;
     }
   }
+  if (C && o.style) { const u = sashStyle(C.c.units.find(x => x[1] === C.code) || [C.W, C.code, C.kind], o.style); C.code = u[1]; C.kind = u[2]; }
   const autoOn = !!X.autoHigh && !stk && (I.transom || {})[o.id] !== false;
   const cols = [];
   let fits = false;
@@ -1065,8 +1080,8 @@ export const STR = {
     dirs: { n: '北', s: '南', e: '東', w: '西' },
     windows: '窓（一条の規格サッシのみ）', schedule: '窓リスト', transom: '上部FIX（自動）', noRoom: '天井が低く不可', stackNo: '図面で重ねた窓（平面図で編集）', stacked: (k) => ' ＋上に' + k + '枚',
     sashRead: (c, h) => 'サッシ ' + c + '枚・上部FIX ' + h + '枚', dropped: (k) => '（' + k + '枚は天井に入らない）',
-    sashNote: '一条の自社サッシのみ：規格サイズ（幅228〜2,487×高さ467〜2,174）。掃き出し窓は高さ2,174まで、他の窓は上端2,144にそろえる。並ぶ窓は1,820ピッチ（2マス）。高窓はFIX（1,653×467、勾配の高い側の妻壁は1,653×1,900）を同じ幅の窓の上に150mmの壁をはさんで重ねる：低い側の天井から150mm以上下、勾配の低い端から6.37m（7マス）以内のみ。高い側の角の1マスは壁。',
-    winRow: (w) => w.n ? (w.n > 1 ? w.n + '枚 × ' : '') + w.code + ' ' + Math.round(w.unitW * 1000).toLocaleString('en-US') + '×' + Math.round(w.unitH * 1000).toLocaleString('en-US') : '—',
+    sashNote: '一条の自社サッシのみ：規格サイズ（幅228〜2,487×高さ467〜2,174）。1階：掃き出し窓は高さ2,174まで、他の窓は上端2,144にそろえる。2階：掃き出し窓なしで窓のみ：高さ1,900（床から244〜2,144）のFIX、窓のある部屋には開く窓を1つ以上。並ぶ窓は1,820ピッチ（2マス）。高窓はFIX（1,653×467、勾配の高い側の妻壁は1,653×1,900）を同じ幅の窓の上に150mmの壁をはさんで重ねる：低い側の天井から150mm以上下、勾配の低い端から6.37m（7マス）以内のみ。高い側の角の1マスは壁。',
+    winRow: (w) => w.n ? (w.n > 1 ? w.n + '枚 × ' : '') + w.code + ' ' + Math.round(w.unitW * 1000).toLocaleString('en-US') + '×' + Math.round(w.unitH * 1000).toLocaleString('en-US') + ({ fix: ' FIX', sliding: ' 引違い', awning: ' 横すべり出し' }[w.kind] || '') : '—',
     fittings: '設備', kitchen: 'キッチン', layout: '型', ub: 'ユニットバス／シャワー', vanity: '洗面化粧台', toilet: 'トイレ', door: '室内ドアの高さ', allDoors: 'すべての室内ドア',
     hinoki: 'ひのき浴槽（図面どおり・造作）', showerOnly: 'シャワーユニット', cupboard: 'カップボード', summary: 'カタログ適合',
     fitRules: '判定：シャワーユニットはメーカーの据付寸法（未公表なら本体＋各辺50mm）、ユニットバスは本体＋各辺150mm。バスルームは奥からユニット・トイレ（幅0.8m、便器0.38×0.76m）・洗面化粧台を一列に並べ、それぞれの前に0.6m以上の立つスペース。ドアの開き・出入り口は設備に当たらないこと、ユニットは窓の前に置かない。トイレ室は便器＋前0.6m×幅0.8m。',
@@ -1101,8 +1116,8 @@ export const STR = {
     dirs: { n: 'N', s: 'S', e: 'E', w: 'W' },
     windows: 'WINDOWS (Ichijo sashes only)', schedule: 'Window schedule', transom: 'High FIX rows (automatic)', noRoom: 'ceiling too low', stackNo: 'stack drawn in the plan (edit it there)', stacked: (k) => ' + ' + k + ' stacked',
     sashRead: (c, h) => c + ' sash units · ' + h + ' high FIX stacked', dropped: (k) => ' (' + k + ' no room under the ceiling)',
-    sashNote: 'Ichijo\u2019s own sashes only: whole standard units (W 228–2,487 × H 467–2,174); floor sliders end at 2,174, every other unit on the 2,144 head line; side by side 1,820 c/c (2 modules). High windows = fixed 1,653 × 467 units (1,653 × 1,900 on the high end wall) stacked over a unit of the same width on a 150 mm band, ≥ 150 mm under the ceiling at their low edge, only within 6.37 m (7 modules) of the slope\u2019s low edge; the corner module at the high end stays solid.',
-    winRow: (w) => w.n ? (w.n > 1 ? w.n + ' × ' : '') + w.code + ' ' + Math.round(w.unitW * 1000).toLocaleString('en-US') + '×' + Math.round(w.unitH * 1000).toLocaleString('en-US') : '—',
+    sashNote: 'Ichijo\u2019s own sashes only: whole standard units (W 228–2,487 × H 467–2,174). 1F: floor-level sliders up to 2,174, every other unit on the 2,144 head line. 2F: windows only, no floor-level sliders: 1,900 high, 244–2,144 above the floor, fixed, with at least one opening window in every room that has windows. Side by side 1,820 c/c (2 modules). High windows = fixed 1,653 × 467 units (1,653 × 1,900 on the high end wall) stacked over a unit of the same width on a 150 mm band, ≥ 150 mm under the ceiling at their low edge, only within 6.37 m (7 modules) of the slope\u2019s low edge; the corner module at the high end stays solid.',
+    winRow: (w) => w.n ? (w.n > 1 ? w.n + ' × ' : '') + w.code + ' ' + Math.round(w.unitW * 1000).toLocaleString('en-US') + '×' + Math.round(w.unitH * 1000).toLocaleString('en-US') + ({ fix: ' fixed', sliding: ' sliding', awning: ' awning' }[w.kind] || '') : '—',
     fittings: 'FITTINGS', kitchen: 'Kitchen', layout: 'Layout', ub: 'Unit bath / shower', vanity: 'Vanity', toilet: 'Toilet', door: 'Interior door height', allDoors: 'all interior doors',
     hinoki: 'Hinoki tubs as drawn (custom)', showerOnly: 'Unit shower', cupboard: 'Cupboard', summary: 'CATALOGUE FIT',
     fitRules: 'Fit rules: unit shower = the maker\u2019s installation space where published, else its size + 50 mm per side; unit bath = size + 150 mm per side. Bathrooms: from the far end the unit, a 0.8 m toilet zone (toilet 0.38 × 0.76 m), the vanity, in a line along one wall, with ≥ 0.6 m standing space in front of each; door swing and entry clear of the fittings; no unit in front of a window. WC: toilet + 0.6 m in front, 0.8 m wide.',

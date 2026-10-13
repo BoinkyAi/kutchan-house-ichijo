@@ -1,8 +1,8 @@
 {
- "version": 5,
+ "version": 6,
  "title": "Plan B — Ichijo · compact",
  "ja": "プランB 一条版・コンパクト",
- "source": "Plan B — Ichijo (plan e v6), compact: the main block 2.73 m shorter (Toby 2026-10-12: \"put a bedroom downstairs ... reduce the floor area overall for both 1F and 2F\"); v2: the stair reversed, genkan + hall at the inner corner, no corridor; v3: bedroom 3 + its bathroom in the wing, the gym one room (Toby: \"do not split up the gym\"); v4: the gym 52 m2 (7.56 x 6.88 m), the onsen in a strip along the north wall; v5: plan e's Ichijo roof (flat parapet main roof + the living wing's 3.5-sun mono-pitch), Ichijo's own sashes (high wall: sliders + stacked FIX within 7 modules), a parent-child front door; Ichijo rules in model.ichijo (ichijo.js), catalogue fittings in room.fit",
+ "source": "Plan B — Ichijo (plan e v6), compact: the main block 2.73 m shorter (Toby 2026-10-12: \"put a bedroom downstairs ... reduce the floor area overall for both 1F and 2F\"); v2: the stair reversed, genkan + hall at the inner corner, no corridor; v3: bedroom 3 + its bathroom in the wing, the gym one room (Toby: \"do not split up the gym\"); v4: the gym 52 m2 (7.56 x 6.88 m), the onsen in a strip along the north wall; v5: plan e's Ichijo roof (flat parapet main roof + the living wing's 3.5-sun mono-pitch), Ichijo's own sashes (high wall: sliders + stacked FIX within 7 modules), a parent-child front door; v6: the 2F windows only (1,900 high, no floor-level sliders), one opening window per room; Ichijo rules in model.ichijo (ichijo.js), catalogue fittings in room.fit",
  "ground": -0.45,
  "levels": [
   {
@@ -1141,9 +1141,10 @@
        "type": "window",
        "at": 1.0407,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
-       "src": "639"
+       "sill": 0.244,
+       "head": 2.144,
+       "src": "639",
+       "style": "fix"
       },
       {
        "id": "o13",
@@ -1152,7 +1153,8 @@
        "w": 0.6,
        "sill": 0.244,
        "head": 2.144,
-       "src": "859"
+       "src": "859",
+       "style": "open"
       },
       {
        "id": "o14",
@@ -1161,15 +1163,16 @@
        "w": 0.6,
        "sill": 0.244,
        "head": 2.144,
-       "src": "858"
+       "src": "858",
+       "style": "open"
       },
       {
        "id": "o15",
        "type": "window",
        "at": 8.8149,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "f837"
       }
      ],
@@ -1193,26 +1196,28 @@
        "type": "window",
        "at": 0.8137,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
-       "src": "f838"
+       "sill": 0.244,
+       "head": 2.144,
+       "src": "f838",
+       "style": "fix"
       },
       {
        "id": "oi1",
        "type": "window",
        "at": 2.6337,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
-       "src": "f838.2"
+       "sill": 0.244,
+       "head": 2.144,
+       "src": "f838.2",
+       "style": "fix"
       },
       {
        "id": "o17",
        "type": "window",
        "at": 5.2295,
        "w": 2.487,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "f705"
       }
      ],
@@ -1236,9 +1241,10 @@
        "type": "window",
        "at": 0.6445,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
-       "src": "704"
+       "sill": 0.244,
+       "head": 2.144,
+       "src": "704",
+       "style": "fix"
       }
      ],
      "src": "632+629"
@@ -1261,9 +1267,10 @@
        "type": "window",
        "at": 0.898,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "max1b",
+       "style": "fix",
        "stack": [
         {
          "h": 0.467,
@@ -1282,9 +1289,10 @@
        "type": "window",
        "at": 2.718,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "max1b.2",
+       "style": "fix",
        "stack": [
         {
          "h": 0.467,
@@ -1298,9 +1306,10 @@
        "type": "window",
        "at": 4.538,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
-       "src": "max1b.3"
+       "sill": 0.244,
+       "head": 2.144,
+       "src": "max1b.3",
+       "style": "fix"
       },
       {
        "id": "o21",
@@ -1317,8 +1326,8 @@
        "type": "window",
        "at": 8.4006,
        "w": 2.487,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "max2b"
       },
       {
@@ -1326,8 +1335,8 @@
        "type": "window",
        "at": 11.8675,
        "w": 2.487,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "max3b"
       }
      ],
@@ -1351,8 +1360,8 @@
        "type": "window",
        "at": 1.9035,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "765",
        "stack": [
         {
@@ -1367,9 +1376,10 @@
        "type": "window",
        "at": 3.7235,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "765.2",
+       "style": "fix",
        "stack": [
         {
          "h": 0.467,
@@ -1404,9 +1414,10 @@
        "type": "window",
        "at": 0.6093,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "764",
+       "style": "fix",
        "stack": [
         {
          "h": 1.9,
@@ -1420,9 +1431,10 @@
        "type": "window",
        "at": 2.4293,
        "w": 1.653,
-       "sill": 0.0,
-       "head": 2.174,
+       "sill": 0.244,
+       "head": 2.144,
        "src": "764.2",
+       "style": "fix",
        "stack": [
         {
          "h": 1.9,
