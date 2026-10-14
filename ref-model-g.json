@@ -1,8 +1,8 @@
 {
- "version": 4,
+ "version": 5,
  "title": "Plan B — Ichijo · 3 up, 1 down",
  "ja": "プランB 一条版・寝室1つ下階",
- "source": "Plan B — Ichijo (plan e v6) with one bedroom moved down: bedroom 3 (the wing east of the hall) + bathroom 3 (west of the hall) on the 1F, each with a door from the hall at the stair foot, bedrooms 1, 2, 4 enlarged on the 2F (Toby 2026-10-12: \"move one bedroom from 2F to 1F and make all the bedrooms on 2F larger\"); no corridor; v3: plan e's Ichijo roof (flat parapet main roof + the living wing's 3.5-sun mono-pitch), Ichijo's own sashes, a parent-child front door; v4: the 2F windows only (1,900 high, no floor-level sliders), one opening window per room; Ichijo rules in model.ichijo (ichijo.js), catalogue fittings in room.fit",
+ "source": "Plan B — Ichijo (plan e v6) with one bedroom moved down: bedroom 3 (the wing east of the hall) + bathroom 3 (west of the hall) on the 1F, each with a door from the hall at the stair foot, bedrooms 1, 2, 4 enlarged on the 2F (Toby 2026-10-12: \"move one bedroom from 2F to 1F and make all the bedrooms on 2F larger\"); no corridor; v3: plan e's Ichijo roof (flat parapet main roof + the living wing's 3.5-sun mono-pitch), Ichijo's own sashes, a parent-child front door; v4: the 2F windows only (1,900 high, no floor-level sliders), one opening window per room; v5: one 1,653 x 1,175 high unit over the living side walls' second column; Ichijo rules in model.ichijo (ichijo.js), catalogue fittings in room.fit",
  "ground": -0.45,
  "levels": [
   {
@@ -1303,12 +1303,7 @@
        "style": "fix",
        "stack": [
         {
-         "h": 0.467,
-         "band": 0.15,
-         "style": "fix"
-        },
-        {
-         "h": 0.467,
+         "h": 1.175,
          "band": 0.15,
          "style": "fix"
         }
@@ -1412,12 +1407,7 @@
        "style": "fix",
        "stack": [
         {
-         "h": 0.467,
-         "band": 0.15,
-         "style": "fix"
-        },
-        {
-         "h": 0.467,
+         "h": 1.175,
          "band": 0.15,
          "style": "fix"
         }

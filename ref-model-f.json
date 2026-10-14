@@ -1,8 +1,8 @@
 {
- "version": 6,
+ "version": 7,
  "title": "Plan B — Ichijo · compact",
  "ja": "プランB 一条版・コンパクト",
- "source": "Plan B — Ichijo (plan e v6), compact: the main block 2.73 m shorter (Toby 2026-10-12: \"put a bedroom downstairs ... reduce the floor area overall for both 1F and 2F\"); v2: the stair reversed, genkan + hall at the inner corner, no corridor; v3: bedroom 3 + its bathroom in the wing, the gym one room (Toby: \"do not split up the gym\"); v4: the gym 52 m2 (7.56 x 6.88 m), the onsen in a strip along the north wall; v5: plan e's Ichijo roof (flat parapet main roof + the living wing's 3.5-sun mono-pitch), Ichijo's own sashes (high wall: sliders + stacked FIX within 7 modules), a parent-child front door; v6: the 2F windows only (1,900 high, no floor-level sliders), one opening window per room; Ichijo rules in model.ichijo (ichijo.js), catalogue fittings in room.fit",
+ "source": "Plan B — Ichijo (plan e v6), compact: the main block 2.73 m shorter (Toby 2026-10-12: \"put a bedroom downstairs ... reduce the floor area overall for both 1F and 2F\"); v2: the stair reversed, genkan + hall at the inner corner, no corridor; v3: bedroom 3 + its bathroom in the wing, the gym one room (Toby: \"do not split up the gym\"); v4: the gym 52 m2 (7.56 x 6.88 m), the onsen in a strip along the north wall; v5: plan e's Ichijo roof (flat parapet main roof + the living wing's 3.5-sun mono-pitch), Ichijo's own sashes (high wall: sliders + stacked FIX within 7 modules), a parent-child front door; v6: the 2F windows only (1,900 high, no floor-level sliders), one opening window per room; v7: one 1,653 x 1,175 high unit over the living side walls' second column; Ichijo rules in model.ichijo (ichijo.js), catalogue fittings in room.fit",
  "ground": -0.45,
  "levels": [
   {
@@ -1273,12 +1273,7 @@
        "style": "fix",
        "stack": [
         {
-         "h": 0.467,
-         "band": 0.15,
-         "style": "fix"
-        },
-        {
-         "h": 0.467,
+         "h": 1.175,
          "band": 0.15,
          "style": "fix"
         }
@@ -1382,12 +1377,7 @@
        "style": "fix",
        "stack": [
         {
-         "h": 0.467,
-         "band": 0.15,
-         "style": "fix"
-        },
-        {
-         "h": 0.467,
+         "h": 1.175,
          "band": 0.15,
          "style": "fix"
         }

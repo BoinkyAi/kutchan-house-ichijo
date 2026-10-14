@@ -22,9 +22,10 @@
               sliders 0 -> 2,174, else on the 2,144 head line), columns of one width (the most
               glass) at Ichijo's module pitch (1,653 -> 1,820 c/c), centred in the span; in the
               sloped zone 1,653 wide, on a side wall on the 455 grid from the slope's low edge
-              with the corner module at the high end solid; over each column rows of high FIX
-              (JF5915 1,653 x 467; JF5961 1,900 where it fits = the high end wall) stacked on a
-              highGap band, ending >= highTopGap under the ceiling at the column's low edge and
+              with the corner module at the high end solid; over each column rows of high units
+              (JF5915 1,653 x 467; J5942 1,653 x 1,175 where it fits = the side walls' second column;
+              JF5961 1,900 where it fits = the high end wall) stacked on a highGap band, ending
+              >= highTopGap under the ceiling at the column's low edge and
               within highMaxRun of the slope's low edge (Ichijo's 7-module rule): automatic
               (ichijo.highWin set, unless ichijo.transom[id] = false) or the op's own `stack`
               (PRIMITIVES.md; validated: a row that does not fit ends it).
@@ -300,8 +301,9 @@ export const SASH = [
 ];
 /* units stacked over a column, by its width (mm): the same width (mullions line up), tallest first. Automatic rows
    go on 1,653 columns only = STANDARDS' default Ichijo bay (J5971 + JF5915 1,653 x 467; JF5961 1,653 x 1,900 where
-   it fits under the ceiling = the high end wall, §2 d3) */
-export const SASH_HIGH = { 1653: [[1.9, 'JF5961'], [0.467, 'JF5915']], 2487: [[1.9, 'J8661'], [0.467, 'J8615T']], 1198: [[0.467, 'JF4415']],
+   it fits under the ceiling = the high end wall, §2 d3; J5942 1,653 x 1,175 where it fits but a 1,900 does not = the
+   living side walls' second column, one unit instead of two JF5915) */
+export const SASH_HIGH = { 1653: [[1.9, 'JF5961'], [1.175, 'J5942'], [0.467, 'JF5915']], 2487: [[1.9, 'J8661'], [0.467, 'J8615T']], 1198: [[0.467, 'JF4415']],
   743: [[1.9, 'JF2461']], 600: [[1.9, 'JF2061'], [0.603, 'JF2020']], 405: [[1.9, 'JF1561']], 228: [[1.9, 'JF1061']] };
 const HALF = MASU / 2;                                           /* sashes sit on Ichijo's half-module grid (455 mm) */
 /* centre-to-centre of repeated columns: the half modules the unit + >= 120 mm of wall take (1,653 -> 1,820 = 2 modules,
@@ -1025,6 +1027,17 @@ const LAYOUT = { ja: { I: 'I型', peninsula: 'ペニンシュラ', island: 'ア�
 const MAKER_JA = { ichijo: '一条', panasonic: 'パナソニック', lixil: 'LIXIL', toto: 'TOTO', housetec: 'ハウステック' };
 const MAKER_EN = { ichijo: 'Ichijo', panasonic: 'Panasonic', lixil: 'LIXIL', toto: 'TOTO', housetec: 'Housetec' };
 const yen = (v) => v === null || v === undefined ? '' : v === 0 ? '' : '+¥' + Math.round(v).toLocaleString('en-US');
+const mmT = (v) => Math.round(v * 1000).toLocaleString('en-US');
+/* the high units stacked over a window's columns, grouped (bottom row first): [{ n, code, w, h }] */
+function highUnits(w) {
+  const out = [];
+  for (const u of w.units || []) for (const r of u.rows) {
+    const g = out.find(x => x.code === r.code && Math.abs(x.w - u.w) < 1e-6 && Math.abs(x.h - r.h) < 1e-6);
+    if (g) g.n++; else out.push({ n: 1, code: r.code, w: u.w, h: r.h });
+  }
+  return out;
+}
+const unitList = (L, times, sep) => L.map(u => (u.n > 1 ? u.n + times : '') + u.code + ' ' + mmT(u.w) + '×' + mmT(u.h)).join(sep);
 /* a catalogue entry in one line: maker line size (layout) [price] [provisional] */
 export function catLabel(e, lang, short, noLayout) {
   if (!e) return '';
@@ -1078,9 +1091,9 @@ export const STR = {
     cupboardRow: 'カップボード（天板・吊戸棚）', cupMax: '入る最長', cupNone: 'トール収納（天板なし）',
     areaRead: (a, m) => a.toFixed(1) + ' / ' + m + ' m²',
     dirs: { n: '北', s: '南', e: '東', w: '西' },
-    windows: '窓（一条の規格サッシのみ）', schedule: '窓リスト', transom: '上部FIX（自動）', noRoom: '天井が低く不可', stackNo: '図面で重ねた窓（平面図で編集）', stacked: (k) => ' ＋上に' + k + '枚',
-    sashRead: (c, h) => 'サッシ ' + c + '枚・上部FIX ' + h + '枚', dropped: (k) => '（' + k + '枚は天井に入らない）',
-    sashNote: '一条の自社サッシのみ：規格サイズ（幅228〜2,487×高さ467〜2,174）。1階：掃き出し窓は高さ2,174まで、他の窓は上端2,144にそろえる。2階：掃き出し窓なしで窓のみ：高さ1,900（床から244〜2,144）のFIX、窓のある部屋には開く窓を1つ以上。並ぶ窓は1,820ピッチ（2マス）。高窓はFIX（1,653×467、勾配の高い側の妻壁は1,653×1,900）を同じ幅の窓の上に150mmの壁をはさんで重ねる：低い側の天井から150mm以上下、勾配の低い端から6.37m（7マス）以内のみ。高い側の角の1マスは壁。',
+    windows: '窓（一条の規格サッシのみ）', schedule: '窓リスト', transom: '上部の窓（自動）', noRoom: '天井が低く不可', stackNo: '図面で重ねた窓（平面図で編集）', stacked: (L) => ' ＋上に ' + unitList(L, '枚 × ', '・'),
+    sashRead: (c, h) => 'サッシ ' + c + '枚・上部の窓 ' + h + '枚', dropped: (k) => '（' + k + '枚は天井に入らない）',
+    sashNote: '一条の自社サッシのみ：規格サイズ（幅228〜2,487×高さ467〜2,174）。1階：掃き出し窓は高さ2,174まで、他の窓は上端2,144にそろえる。2階：掃き出し窓なしで窓のみ：高さ1,900（床から244〜2,144）のFIX、窓のある部屋には開く窓を1つ以上。並ぶ窓は1,820ピッチ（2マス）。高窓（1,653×467のFIX、入る所は1,653×1,175、勾配の高い側の妻壁は1,653×1,900のFIX）を同じ幅の窓の上に150mmの壁をはさんで重ねる：低い側の天井から150mm以上下、勾配の低い端から6.37m（7マス）以内のみ。高い側の角の1マスは壁。',
     winRow: (w) => w.n ? (w.n > 1 ? w.n + '枚 × ' : '') + w.code + ' ' + Math.round(w.unitW * 1000).toLocaleString('en-US') + '×' + Math.round(w.unitH * 1000).toLocaleString('en-US') + ({ fix: ' FIX', sliding: ' 引違い', awning: ' 横すべり出し' }[w.kind] || '') : '—',
     fittings: '設備', kitchen: 'キッチン', layout: '型', ub: 'ユニットバス／シャワー', vanity: '洗面化粧台', toilet: 'トイレ', door: '室内ドアの高さ', allDoors: 'すべての室内ドア',
     hinoki: 'ひのき浴槽（図面どおり・造作）', showerOnly: 'シャワーユニット', cupboard: 'カップボード', summary: 'カタログ適合',
@@ -1114,9 +1127,9 @@ export const STR = {
     cupboardRow: 'Cupboard (worktop + wall units)', cupMax: 'Longest that fits', cupNone: 'Tall units, no worktop',
     areaRead: (a, m) => a.toFixed(1) + ' / ' + m + ' m²',
     dirs: { n: 'N', s: 'S', e: 'E', w: 'W' },
-    windows: 'WINDOWS (Ichijo sashes only)', schedule: 'Window schedule', transom: 'High FIX rows (automatic)', noRoom: 'ceiling too low', stackNo: 'stack drawn in the plan (edit it there)', stacked: (k) => ' + ' + k + ' stacked',
-    sashRead: (c, h) => c + ' sash units · ' + h + ' high FIX stacked', dropped: (k) => ' (' + k + ' no room under the ceiling)',
-    sashNote: 'Ichijo\u2019s own sashes only: whole standard units (W 228–2,487 × H 467–2,174). 1F: floor-level sliders up to 2,174, every other unit on the 2,144 head line. 2F: windows only, no floor-level sliders: 1,900 high, 244–2,144 above the floor, fixed, with at least one opening window in every room that has windows. Side by side 1,820 c/c (2 modules). High windows = fixed 1,653 × 467 units (1,653 × 1,900 on the high end wall) stacked over a unit of the same width on a 150 mm band, ≥ 150 mm under the ceiling at their low edge, only within 6.37 m (7 modules) of the slope\u2019s low edge; the corner module at the high end stays solid.',
+    windows: 'WINDOWS (Ichijo sashes only)', schedule: 'Window schedule', transom: 'High rows (automatic)', noRoom: 'ceiling too low', stackNo: 'stack drawn in the plan (edit it there)', stacked: (L) => ' + ' + unitList(L, ' × ', ' + ') + ' above',
+    sashRead: (c, h) => c + ' sash units · ' + h + ' high units stacked', dropped: (k) => ' (' + k + ' no room under the ceiling)',
+    sashNote: 'Ichijo\u2019s own sashes only: whole standard units (W 228–2,487 × H 467–2,174). 1F: floor-level sliders up to 2,174, every other unit on the 2,144 head line. 2F: windows only, no floor-level sliders: 1,900 high, 244–2,144 above the floor, fixed, with at least one opening window in every room that has windows. Side by side 1,820 c/c (2 modules). High windows = 1,653 × 467 fixed, 1,653 × 1,175 where it fits, 1,653 × 1,900 fixed on the high end wall, stacked over a unit of the same width on a 150 mm band, ≥ 150 mm under the ceiling at their low edge, only within 6.37 m (7 modules) of the slope\u2019s low edge; the corner module at the high end stays solid.',
     winRow: (w) => w.n ? (w.n > 1 ? w.n + ' × ' : '') + w.code + ' ' + Math.round(w.unitW * 1000).toLocaleString('en-US') + '×' + Math.round(w.unitH * 1000).toLocaleString('en-US') + ({ fix: ' fixed', sliding: ' sliding', awning: ' awning' }[w.kind] || '') : '—',
     fittings: 'FITTINGS', kitchen: 'Kitchen', layout: 'Layout', ub: 'Unit bath / shower', vanity: 'Vanity', toilet: 'Toilet', door: 'Interior door height', allDoors: 'all interior doors',
     hinoki: 'Hinoki tubs as drawn (custom)', showerOnly: 'Unit shower', cupboard: 'Cupboard', summary: 'CATALOGUE FIT',
@@ -1284,7 +1297,7 @@ export function mountPanel(host, o) {
         E('td', { text: (['1F', '2F'][w.level] || '') + ' ' + T.dirs[w.dir] + ' ' + w.src }),
         E('td', { text: w.room ? (lang === 'ja' ? w.room.ja : w.room.name) : '' }),
         E('td', { text: Math.round(w.drawn.w * 1000) + '×' + Math.round((w.drawn.head - w.drawn.sill) * 1000) }),
-        E('td', { text: T.winRow(w) + (w.highs ? T.stacked(w.highs) : '') + (w.dropped ? T.dropped(w.dropped) : '') }),
+        E('td', { text: T.winRow(w) + (w.highs ? T.stacked(highUnits(w)) : '') + (w.dropped ? T.dropped(w.dropped) : '') }),
         E('td', {}, [tcb, w.highs ? ' ' + w.transoms + '/' + w.n : ' –']),
       ]));
     }
